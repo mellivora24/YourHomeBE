@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - mqtt
+    networks:
+      - yourhomebe-network
+
+  mqtt:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"  # WebSocket port cho Mosquitto
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+    networks:
+      - yourhomebe-network
+
+volumes:
+  mosquitto-data:
+  mosquitto-log:
+
+networks:
+  yourhomebe-network:
+    driver: bridge
